@@ -1,0 +1,19 @@
+SUMMONER'S RIFT MAP IMAGE NEEDED
+=====================================
+
+You need to add a Summoner's Rift map image to this folder.
+
+Filename: summoners_rift.png
+
+Where to get it:
+1. Search Google Images for "summoners rift map" or "league of legends map"
+2. Download a high-quality PNG image (recommended: 1920x1080 or higher)
+3. Save it as "summoners_rift.png" in this assets/ folder
+
+Alternative:
+- You can use any background image you prefer
+- If you want a different image, update the SUMMONERS_RIFT_IMAGE path in config.py
+
+Note: The current image_generator.py creates a simple colored background instead of 
+using the map image. You can enhance it to actually use the map as a background if desired.
+
