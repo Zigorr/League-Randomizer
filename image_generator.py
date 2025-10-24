@@ -53,12 +53,15 @@ class ImageGenerator:
         return None
     
     async def get_champion_portrait(self, champion_name):
-        """Get champion portrait from Riot Data Dragon"""
-        from riot_api import riot_api
+        """Get champion portrait from Riot Data Dragon (free API - no key needed)"""
         try:
-            url = await riot_api.get_champion_image_url(champion_name)
-            if url:
-                return await self.download_image(url)
+            # Data Dragon doesn't need API key - it's free!
+            # We'll use the champion name to build the URL
+            # Format: https://ddragon.leagueoflegends.com/cdn/VERSION/img/champion/CHAMPIONNAME.png
+            # For now, we'll use a recent version
+            version = "13.24.1"  # Update this periodically or fetch dynamically
+            url = f"https://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{champion_name}.png"
+            return await self.download_image(url)
         except Exception as e:
             print(f"Error fetching champion portrait: {e}")
         return None

@@ -24,19 +24,10 @@ class ChampionRandomizer:
                 champions.append(champion)
         return champions
     
-    def get_owned_champions_for_role(self, owned_champions, role):
-        """Get owned champions that can play a specific role"""
-        if not owned_champions:
-            # If no owned champions, return all champions for the role
-            return self.get_champions_for_role(role)
-        
-        valid_champions = []
-        for champion in owned_champions:
-            if champion in self.champion_roles:
-                if role in self.champion_roles[champion]:
-                    valid_champions.append(champion)
-        
-        return valid_champions
+    def get_owned_champions_for_role(self, role):
+        """Get all champions that can play a specific role"""
+        # Always return all champions for the role (no owned champion filtering)
+        return self.get_champions_for_role(role)
     
     def get_roles_for_champion(self, champion):
         """Get all roles a champion can play"""
@@ -44,25 +35,19 @@ class ChampionRandomizer:
     
     def can_swap_roles(self, player1, player2, used_champions):
         """
-        Check if two players can swap roles based on their champion pools
+        Check if two players can swap roles
         
         Args:
-            player1: Player dict with 'role' and 'owned_champions'
-            player2: Player dict with 'role' and 'owned_champions'
+            player1: Player dict with 'role'
+            player2: Player dict with 'role'
             used_champions: Set of already used champion names
         
         Returns:
             bool: True if swap is possible
         """
         # Get available champions for swapped roles
-        p1_champs_for_p2_role = self.get_owned_champions_for_role(
-            player1.get('owned_champions', []), 
-            player2['role']
-        )
-        p2_champs_for_p1_role = self.get_owned_champions_for_role(
-            player2.get('owned_champions', []), 
-            player1['role']
-        )
+        p1_champs_for_p2_role = self.get_owned_champions_for_role(player2['role'])
+        p2_champs_for_p1_role = self.get_owned_champions_for_role(player1['role'])
         
         # Filter out used champions
         p1_available = [c for c in p1_champs_for_p2_role if c not in used_champions]
@@ -92,10 +77,9 @@ class ChampionRandomizer:
         # First pass: Try to assign champions to players
         for player in team:
             role = player['role']
-            owned_champions = player.get('owned_champions', [])
             
             # Get available champions for this role
-            available_champions = self.get_owned_champions_for_role(owned_champions, role)
+            available_champions = self.get_owned_champions_for_role(role)
             available_champions = [c for c in available_champions if c not in used_champions]
             
             if available_champions:
@@ -126,16 +110,10 @@ class ChampionRandomizer:
                     assigned['role'] = old_role
                     
                     # Assign new champions
-                    unassigned_champs = self.get_owned_champions_for_role(
-                        unassigned.get('owned_champions', []),
-                        unassigned['role']
-                    )
+                    unassigned_champs = self.get_owned_champions_for_role(unassigned['role'])
                     unassigned_champs = [c for c in unassigned_champs if c not in used_champions]
                     
-                    assigned_champs = self.get_owned_champions_for_role(
-                        assigned.get('owned_champions', []),
-                        assigned['role']
-                    )
+                    assigned_champs = self.get_owned_champions_for_role(assigned['role'])
                     assigned_champs = [c for c in assigned_champs if c not in used_champions]
                     
                     if unassigned_champs and assigned_champs:

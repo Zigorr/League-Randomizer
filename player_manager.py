@@ -38,13 +38,7 @@ class PlayerManager:
             return False, "Player already registered"
         
         self.players[discord_id] = {
-            'discord_name': discord_name,
-            'riot_id': None,
-            'game_name': None,
-            'tag_line': None,
-            'region': None,
-            'puuid': None,
-            'owned_champions': []
+            'discord_name': discord_name
         }
         
         self.save_players()
@@ -67,34 +61,6 @@ class PlayerManager:
         """Check if a player is registered"""
         return str(discord_id) in self.players
     
-    def link_riot_account(self, discord_id, game_name, tag_line, region, puuid=None):
-        """Link a Riot account to a Discord user"""
-        discord_id = str(discord_id)
-        
-        if discord_id not in self.players:
-            return False, "Player not registered. Use /register first."
-        
-        self.players[discord_id]['riot_id'] = f"{game_name}#{tag_line}"
-        self.players[discord_id]['game_name'] = game_name
-        self.players[discord_id]['tag_line'] = tag_line
-        self.players[discord_id]['region'] = region
-        self.players[discord_id]['puuid'] = puuid
-        
-        self.save_players()
-        return True, f"Linked Riot account {game_name}#{tag_line}"
-    
-    def set_owned_champions(self, discord_id, champions):
-        """Set owned champions for a player"""
-        discord_id = str(discord_id)
-        
-        if discord_id not in self.players:
-            return False, "Player not registered"
-        
-        self.players[discord_id]['owned_champions'] = champions
-        self.save_players()
-        
-        return True, f"Updated champion pool ({len(champions)} champions)"
-    
     def get_player(self, discord_id):
         """Get player data"""
         return self.players.get(str(discord_id))
@@ -114,19 +80,6 @@ class PlayerManager:
                 })
         return registered
     
-    def has_riot_account(self, discord_id):
-        """Check if player has linked Riot account"""
-        discord_id = str(discord_id)
-        if discord_id not in self.players:
-            return False
-        return self.players[discord_id].get('riot_id') is not None
-    
-    def get_owned_champions(self, discord_id):
-        """Get list of owned champions for a player"""
-        discord_id = str(discord_id)
-        if discord_id not in self.players:
-            return []
-        return self.players[discord_id].get('owned_champions', [])
 
 # Global instance
 player_manager = PlayerManager()

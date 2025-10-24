@@ -7,34 +7,6 @@ load_dotenv()
 # Discord Configuration
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 
-# Riot API Configuration
-RIOT_API_KEY = os.getenv('RIOT_API_KEY')
-
-# Riot API Endpoints
-RIOT_API_BASE = "https://{region}.api.riotgames.com"
-RIOT_ACCOUNT_API = "https://americas.api.riotgames.com"
-DATA_DRAGON_BASE = "https://ddragon.leagueoflegends.com"
-
-# Supported regions for Riot API
-REGIONS = {
-    'na1': 'americas',
-    'br1': 'americas',
-    'la1': 'americas',
-    'la2': 'americas',
-    'euw1': 'europe',
-    'eun1': 'europe',
-    'tr1': 'europe',
-    'ru': 'europe',
-    'kr': 'asia',
-    'jp1': 'asia',
-    'oc1': 'sea',
-    'ph2': 'sea',
-    'sg2': 'sea',
-    'th2': 'sea',
-    'tw2': 'sea',
-    'vn2': 'sea',
-}
-
 # File paths
 DATA_DIR = "data"
 ASSETS_DIR = "assets"

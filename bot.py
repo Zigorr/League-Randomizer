@@ -7,7 +7,6 @@ from player_manager import player_manager
 from team_randomizer import team_randomizer
 from champion_randomizer import champion_randomizer
 from image_generator import image_generator
-from riot_api import riot_api
 from keep_alive import keep_alive
 
 # Bot setup with intents
@@ -53,57 +52,6 @@ async def unregister(interaction: discord.Interaction, user: discord.Member):
     else:
         await interaction.response.send_message(f"❌ {message}")
 
-@bot.tree.command(name="link-riot", description="Link your Riot account")
-@app_commands.describe(
-    riot_id="Your Riot ID (e.g., PlayerName#NA1)",
-    region="Your region (e.g., na1, euw1, kr)"
-)
-async def link_riot(interaction: discord.Interaction, riot_id: str, region: str = "na1"):
-    """Link Riot account to Discord user"""
-    await interaction.response.defer()
-    
-    # Check if registered
-    if not player_manager.is_registered(interaction.user.id):
-        await interaction.followup.send("❌ You need to be registered first. Ask an admin to use `/register @you`")
-        return
-    
-    # Parse Riot ID
-    try:
-        game_name, tag_line = riot_id.split('#')
-    except ValueError:
-        await interaction.followup.send("❌ Invalid Riot ID format. Use: PlayerName#TAG")
-        return
-    
-    # Get PUUID from Riot API
-    puuid = await riot_api.get_puuid(game_name, tag_line, region)
-    
-    if not puuid:
-        await interaction.followup.send(f"❌ Could not find Riot account: {riot_id}")
-        return
-    
-    # Link account
-    success, message = player_manager.link_riot_account(
-        interaction.user.id, 
-        game_name, 
-        tag_line, 
-        region, 
-        puuid
-    )
-    
-    if success:
-        # Fetch owned champions
-        await interaction.followup.send(f"✅ {message}\n⏳ Fetching your champion pool...")
-        
-        owned_champions = await riot_api.get_owned_champions(game_name, tag_line, region)
-        
-        if owned_champions:
-            player_manager.set_owned_champions(interaction.user.id, owned_champions)
-            await interaction.followup.send(f"✅ Loaded {len(owned_champions)} champions from your account!")
-        else:
-            await interaction.followup.send("⚠️ Could not fetch champion data. You'll get random champions.")
-    else:
-        await interaction.followup.send(f"❌ {message}")
-
 @bot.tree.command(name="list-players", description="Show all registered League players")
 async def list_players(interaction: discord.Interaction):
     """List all registered players"""
@@ -116,13 +64,9 @@ async def list_players(interaction: discord.Interaction):
     embed = discord.Embed(title="🎮 Registered League Players", color=discord.Color.blue())
     
     for discord_id, data in players.items():
-        riot_info = f"Riot: {data['riot_id']}" if data['riot_id'] else "Not linked"
-        champ_count = len(data.get('owned_champions', []))
-        champ_info = f" ({champ_count} champions)" if champ_count > 0 else ""
-        
         embed.add_field(
             name=data['discord_name'],
-            value=f"{riot_info}{champ_info}",
+            value="✅ Registered",
             inline=False
         )
     
